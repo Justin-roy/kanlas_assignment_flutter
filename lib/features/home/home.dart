@@ -39,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String? userID = Pref.instance.pref.getString(PrefConstant.loggedUserId);
     if (userID != null) {
       await context.read<AuthBloc>().getUser(userId: userID);
+      setState(() {});
     }
   }
 
@@ -209,9 +210,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: IconButton(
                       onPressed: () async {
                         var coinBloc = context.read<AuthBloc>();
-                        // var data = await Navigator.pushNamed(
-                        //     context, QRCodeScannerWidget.id);
-
                         dynamic data;
                         if (kIsWeb) {
                           data = await Navigator.push(
