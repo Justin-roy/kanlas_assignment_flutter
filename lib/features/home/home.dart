@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +19,7 @@ import 'package:qrcode_reader_web/qrcode_reader_web.dart';
 import '../../cache/shared_preferences.dart';
 import '../auth/login_screen.dart';
 
+@RoutePage()
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
   static const id = 'home-screen';
@@ -55,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return Scaffold(
             resizeToAvoidBottomInset: !isLargeScreen,
             appBar: AppBar(
+              automaticallyImplyLeading: false,
               backgroundColor: Colors.transparent,
               elevation: 0,
               actions: [

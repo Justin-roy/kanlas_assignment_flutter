@@ -14,6 +14,7 @@ class AuthBloc extends Cubit<AuthState> {
   AuthBloc()
       : super(const AuthState(
           isAuthenticated: false,
+          isLoading: false,
         ));
 
   final SharedPreferences _prefs = Pref.instance.pref;
@@ -22,7 +23,7 @@ class AuthBloc extends Cubit<AuthState> {
   // api calls
   Future<void> signIn({required String email, required String password}) async {
     try {
-      showLoading();
+      _showLoading();
       var response = await _repo.signIn(email: email, password: password);
       if (response['success']) {
         CustomLogger.logInfo(response['data'].toString());
@@ -33,7 +34,7 @@ class AuthBloc extends Cubit<AuthState> {
     } catch (e) {
       CustomLogger.logError(e.toString());
     } finally {
-      closeLoading();
+      _closeLoading();
     }
   }
 
@@ -42,11 +43,12 @@ class AuthBloc extends Cubit<AuthState> {
       required String password,
       required String phone}) async {
     try {
-      showLoading();
+      _showLoading();
       var response =
           await _repo.signUp(email: email, password: password, phone: phone);
       if (response['success']) {
         showNotification(title: "${response['message']}\nNow go back to login");
+        emit(state.copyWith(isAuthenticated: true));
       } else {
         showNotification(title: response['message']);
         debugPrint(response.toString());
@@ -55,7 +57,7 @@ class AuthBloc extends Cubit<AuthState> {
       CustomLogger.logError(e.toString());
       await Future.delayed(const Duration(seconds: 2));
     } finally {
-      closeLoading();
+      _closeLoading();
     }
   }
 
@@ -67,7 +69,7 @@ class AuthBloc extends Cubit<AuthState> {
 
   Future<bool> sendOTP({required String email}) async {
     try {
-      showLoading();
+      _showLoading();
       var response = await _repo.sentOTP(email: email);
       if (response['success']) {
         CustomLogger.logInfo(response['data'].toString());
@@ -81,7 +83,7 @@ class AuthBloc extends Cubit<AuthState> {
     } catch (e) {
       CustomLogger.logError(e.toString());
     } finally {
-      closeLoading();
+      _closeLoading();
     }
     return false;
   }
@@ -91,7 +93,7 @@ class AuthBloc extends Cubit<AuthState> {
       required String otp,
       required String password}) async {
     try {
-      showLoading();
+      _showLoading();
       var response =
           await _repo.veriftyOTP(email: email, otp: otp, password: password);
       if (response['success']) {
@@ -104,13 +106,13 @@ class AuthBloc extends Cubit<AuthState> {
     } catch (e) {
       debugPrint(e.toString());
     } finally {
-      closeLoading();
+      _closeLoading();
     }
   }
 
   Future<void> getUser({required String userId}) async {
     try {
-      showLoading();
+      _showLoading();
       var response = await _repo.getUser(userId: userId);
       if (response['success']) {
         CustomLogger.logInfo(response['data'].toString());
@@ -120,7 +122,15 @@ class AuthBloc extends Cubit<AuthState> {
     } catch (e) {
       CustomLogger.logError(e.toString());
     } finally {
-      closeLoading();
+      _closeLoading();
     }
+  }
+
+  _showLoading() {
+    emit(state.copyWith(isLoading: true));
+  }
+
+  _closeLoading() {
+    emit(state.copyWith(isLoading: false));
   }
 }

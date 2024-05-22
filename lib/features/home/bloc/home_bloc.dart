@@ -5,7 +5,7 @@ import '../../../util/custom_logger.dart';
 import 'home_state.dart';
 
 class HomeBloc extends Cubit<HomeState> {
-  HomeBloc() : super(HomeState());
+  HomeBloc() : super(HomeState(isLoading: false));
 
   final _repo = Repo();
 
@@ -13,7 +13,7 @@ class HomeBloc extends Cubit<HomeState> {
   Future<bool> scanQrCode(
       {required String qrCode, required String userId}) async {
     try {
-      showLoading();
+      _showLoading();
       var response = await _repo.scanQrCode(qrCode: qrCode, userId: userId);
       if (response['success']) {
         CustomLogger.logInfo(response['data'].toString());
@@ -24,8 +24,16 @@ class HomeBloc extends Cubit<HomeState> {
     } catch (e) {
       CustomLogger.logError(e.toString());
     } finally {
-      closeLoading();
+      _closeLoading();
     }
     return false;
+  }
+
+  _showLoading() {
+    emit(state.copyWith(isLoading: true));
+  }
+
+  _closeLoading() {
+    emit(state.copyWith(isLoading: false));
   }
 }
