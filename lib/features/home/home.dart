@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kanlas_assignment/cache/prefs_constant.dart';
 import 'package:kanlas_assignment/features/auth/bloc/auth_bloc.dart';
 import 'package:kanlas_assignment/features/home/bloc/home_bloc.dart';
-import 'package:kanlas_assignment/features/home/bloc/home_state.dart';
 import 'package:kanlas_assignment/styles/colors/pallet.dart';
 import 'package:kanlas_assignment/util/show_snack_bar.dart';
 import 'package:kanlas_assignment/util/utils.dart';
@@ -17,6 +16,7 @@ import 'package:kanlas_assignment/widgets/text/description_text.dart';
 import 'package:qrcode_reader_web/qrcode_reader_web.dart';
 
 import '../../cache/shared_preferences.dart';
+import '../auth/bloc/auth_state.dart';
 import '../auth/login_screen.dart';
 
 @RoutePage()
@@ -41,20 +41,19 @@ class _HomeScreenState extends State<HomeScreen> {
     String? userID = Pref.instance.pref.getString(PrefConstant.loggedUserId);
     if (userID != null) {
       await context.read<AuthBloc>().getUser(userId: userID);
-      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    var authBloc = context.read<AuthBloc>().state.userModel?.data;
     final isLargeScreen = size.width > 600;
 
     return BlocProvider(
       create: (context) => _bloc,
-      child: BlocBuilder<HomeBloc, HomeState>(
+      child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
+          var authBloc = state.userModel?.data;
           return Scaffold(
             resizeToAvoidBottomInset: !isLargeScreen,
             appBar: AppBar(
