@@ -31,6 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: isLargeScreen,
       body: Form(
+        key: _formKey,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: isLargeScreen ? 120 : 18),
           child: Center(
