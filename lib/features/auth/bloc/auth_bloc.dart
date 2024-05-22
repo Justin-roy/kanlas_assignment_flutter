@@ -58,6 +58,7 @@ class AuthBloc extends Cubit<AuthState> {
       await Future.delayed(const Duration(seconds: 2));
     } finally {
       _closeLoading();
+      emit(state.copyWith(isAuthenticated: false));
     }
   }
 
@@ -99,6 +100,7 @@ class AuthBloc extends Cubit<AuthState> {
       if (response['success']) {
         CustomLogger.logInfo(response['message'].toString());
         showNotification(title: response['message']);
+        emit(state.copyWith(isAuthenticated: true));
       } else {
         showNotification(title: response['message']);
         debugPrint(response.toString());
@@ -107,6 +109,7 @@ class AuthBloc extends Cubit<AuthState> {
       debugPrint(e.toString());
     } finally {
       _closeLoading();
+      emit(state.copyWith(isAuthenticated: false));
     }
   }
 

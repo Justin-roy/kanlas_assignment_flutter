@@ -15,7 +15,9 @@ showSnackBar(
       content: Container(
         alignment: Alignment.center,
         width: double.maxFinite,
-        height: MediaQuery.sizeOf(context).width * 0.3,
+        height: MediaQuery.sizeOf(context).width > 600
+            ? MediaQuery.sizeOf(context).height * 0.3
+            : MediaQuery.sizeOf(context).width * 0.3,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
           gradient: LinearGradient(
