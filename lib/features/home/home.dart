@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kanlas_assignment/cache/prefs_constant.dart';
@@ -10,14 +9,11 @@ import 'package:kanlas_assignment/features/home/bloc/home_bloc.dart';
 import 'package:kanlas_assignment/styles/colors/pallet.dart';
 import 'package:kanlas_assignment/util/show_snack_bar.dart';
 import 'package:kanlas_assignment/util/utils.dart';
-import 'package:kanlas_assignment/widgets/scanner/qr_scanner.dart';
 import 'package:kanlas_assignment/widgets/text/bold_header_text.dart';
 import 'package:kanlas_assignment/widgets/text/description_text.dart';
-import 'package:qrcode_reader_web/qrcode_reader_web.dart';
 
 import '../../cache/shared_preferences.dart';
 import '../auth/bloc/auth_state.dart';
-import '../auth/login_screen.dart';
 
 @RoutePage()
 class HomeScreen extends StatefulWidget {
@@ -219,31 +215,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: IconButton(
                       onPressed: () async {
                         var coinBloc = context.read<AuthBloc>();
-                        dynamic data;
-                        if (kIsWeb) {
-                          data = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => QRCodeReaderSquareWidget(
-                                onDetect: (QRCodeCapture capture) {
-                                  var code = capture.raw;
-                                  Navigator.pop(context, code);
-                                },
-                                size: 250,
-                              ),
-                            ),
-                          );
-                        } else {
-                          data = await Navigator.pushNamed(
-                              context, QRCodeScannerWidget.id);
-                        }
+                        var data =
+                            await AutoRouter.of(context).pushNamed('/qr-home');
 
                         if (data is String) {
-                          bool check = await _bloc.scanQrCode(
-                              qrCode: data, userId: authBloc!.id!);
-                          await coinBloc.getUser(userId: authBloc.id!);
-                          if (!context.mounted) return;
-                          showSnackBar(context, isWrongMessage: !check);
+                          if (authBloc != null && authBloc.id != null) {
+                            bool check = await _bloc.scanQrCode(
+                                qrCode: data, userId: authBloc.id!);
+                            await coinBloc.getUser(userId: authBloc.id!);
+                            if (!context.mounted) return;
+                            showSnackBar(context, isWrongMessage: !check);
+                          }
                         }
                       },
                       icon: const Icon(
@@ -285,10 +267,9 @@ class _HomeScreenState extends State<HomeScreen> {
           TextButton(
             onPressed: () async {
               final prefs = Pref.instance.pref;
-              var navigator = Navigator.of(context);
+              var navigator = AutoRouter.of(context);
               await prefs.clear();
-              navigator.pushNamedAndRemoveUntil(
-                  LoginScreen.id, (route) => false);
+              navigator.pushNamed('/login');
             },
             child: const Text(
               'Log Out',
