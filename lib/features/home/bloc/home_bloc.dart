@@ -17,6 +17,7 @@ class HomeBloc extends Cubit<HomeState> {
       var response = await _repo.scanQrCode(qrCode: qrCode, userId: userId);
       if (response['success']) {
         CustomLogger.logInfo(response['data'].toString());
+        showNotification(title: response['message']);
         return true;
       } else {
         showNotification(title: response['message']);

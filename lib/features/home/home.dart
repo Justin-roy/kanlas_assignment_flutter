@@ -39,8 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _getUserDetail() async {
     String? userID = Pref.instance.pref.getString(PrefConstant.loggedUserId);
-    if (userID != null) {
-      await context.read<AuthBloc>().getUser(userId: userID);
+    var bloc = context.read<AuthBloc>();
+    if (userID != null && bloc.state.userModel?.data == null) {
+      await bloc.getUser(userId: userID);
     }
   }
 
@@ -78,14 +79,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? CrossAxisAlignment.center
                     : CrossAxisAlignment.start,
                 children: [
-                  BoldHeaderText(
-                      label:
-                          "Welcome ${getUsernameFromEmail(authBloc?.email)}"),
-                  const DescriptionText(
-                    label:
-                        "Reedem your points or scan QR to earn more\nEach Scan Gives you 10 Points",
-                    color: Colors.grey,
-                    textAlign: TextAlign.start,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BoldHeaderText(
+                        label:
+                            "Welcome ${getUsernameFromEmail(authBloc?.email)}",
+                      ),
+                      const DescriptionText(
+                        label:
+                            "Reedem your points or scan QR to earn more\nEach Scan Gives you 10 Points",
+                        color: Colors.grey,
+                        textAlign: TextAlign.start,
+                      ),
+                    ],
                   ),
                   SizedBox(height: size.height * 0.15),
                   Container(
@@ -237,7 +244,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           await coinBloc.getUser(userId: authBloc.id!);
                           if (!context.mounted) return;
                           showSnackBar(context, isWrongMessage: !check);
-                          setState(() {});
                         }
                       },
                       icon: const Icon(
