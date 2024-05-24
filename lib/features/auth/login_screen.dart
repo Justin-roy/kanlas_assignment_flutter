@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kanlas_assignment/features/auth/bloc/auth_bloc.dart';
 import 'package:kanlas_assignment/features/auth/bloc/auth_state.dart';
+import 'package:kanlas_assignment/routes/routes_import.gr.dart';
 import 'package:kanlas_assignment/styles/colors/pallet.dart';
 import 'package:kanlas_assignment/util/validators.dart';
 import 'package:kanlas_assignment/widgets/buttons/small_button.dart';
@@ -33,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state.isAuthenticated) {
-              AutoRouter.of(context).pushNamed('/home');
+              AutoRouter.of(context).replaceAll([const HomeScreenRoute()]);
             }
           },
           child: Scaffold(
